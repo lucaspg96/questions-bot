@@ -1,5 +1,6 @@
 from bson import ObjectId
 from pymongo import MongoClient
+
 #generic MongoDB document model
 class AbstractMongo(dict): 
 
@@ -31,10 +32,20 @@ class AbstractMongo(dict):
 
 #question model
 class Question(AbstractMongo):
+	#defining the collection
 	collection = MongoClient()["telegram"]["questions"]
 
 	@staticmethod
 	def get_oldest():
+		"""
+		Method to retreive, if we have, a question from the database.
+
+		Return
+		------
+
+		question: Question object or None
+				an instance of Question class containing the oldest question inserted at the database
+		"""
 		try:
 			doc = Question.collection.find().sort([("time",1)]).limit(1)[0]
 		
@@ -43,9 +54,32 @@ class Question(AbstractMongo):
 		except Exception:
 			return None
 
+	@staticmethod
+	def count():
+		"""
+		Method to get the number of question at the database
+
+		Return
+		------
+
+		count: Integer
+				number of questions at the database
+		"""
+		return Question.collection.count()
+
 	def __str__(self):
+		"""
+		Object's String representation
+
+		Return
+		------
+
+		string: String
+				Question stringfied
+		"""
 		return """
 Usuário: {} ({})
 Hora: {}
 
 Pergunta: {}""".format(self.user_name,self.user_tag,self.time,self.text)
+
